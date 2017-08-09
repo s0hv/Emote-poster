@@ -1,3 +1,8 @@
+"""
+Copyright (c) 2017 s0hvaperuna
+For licence see file LICENCE
+"""
+
 from discord.ext.commands import command
 import re
 import time
