@@ -10,6 +10,8 @@ class Commands:
 
     @command(name='emotes', pass_context=True)
     async def emotes(self, ctx, invite: str, twitch=None, submitter=None):
+        """Post global emotes from a server
+        twitch can be twitch link or the submitter id"""
         if os.path.exists('posted.txt'):
             with open('posted.txt') as f:
                 posted = f.read().split('\n')
@@ -74,6 +76,7 @@ class Commands:
 
     @command()
     async def get_all_invites(self, channel, limit=500):
+        """Get all discord invites from a channel"""
         channel = self.bot.get_channel(channel)
 
         r = re.compile('(https:\/\/discord.gg\/[\d\w]+)')
@@ -94,6 +97,8 @@ class Commands:
 
     @command()
     async def reload(self, *, name):
+        """Reload an extension.
+        Usage: reload commands"""
         t = time.time()
         try:
             self.bot.unload_extension(name)
