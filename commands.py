@@ -23,25 +23,37 @@ class Commands:
         else:
             posted = []
 
+        if os.path.exists('blacklist.txt'):
+            with open('blacklist.txt') as f:
+                blacklist = f.read().split('\n')
+        else:
+            blacklist = []
+
         await self.bot.delete_message(ctx.message)
 
         try:
             invite = await self.bot.get_invite(invite)
         except:
+            print('Invalid invite %s' % str(invite))
             with open('invalid.txt', 'a') as f:
                 f.write(str(invite) + '\n')
             return
 
         server = self.bot.get_server(invite.server.id)
         if not server:
+            print('Server not found in your server list')
             return
 
         if server.id in posted:
-            return print('Duplicate server %s' % str(invite))
+            return print('Duplicate server %s %s' % (str(invite), server.id))
+
+        if server.id in blacklist:
+            print('Server named %s is in blacklist. To post this type remove the id %s from blacklist.txt' % (server.name, server.id))
 
         name = server.name
         emotes_ = list(filter(lambda e: e.managed and e.require_colons and not e.roles, server.emojis))
         if not emotes_:
+            print('No global emotes found')
             return
 
         emotes = ''
@@ -71,7 +83,7 @@ class Commands:
             fmt += '\nSubmitted by: {submitter}'
 
         message = fmt.format(name=name, invite=invite, twitch=twitch,
-                          emotes=emotes, submitter=submitter)
+                             emotes=emotes, submitter=submitter)
 
         for msg in split_string(message):
             await self.bot.say(msg)
@@ -83,8 +95,10 @@ class Commands:
     async def get_all_invites(self, channel, limit=500):
         """Get all discord invites from a channel"""
         channel = self.bot.get_channel(channel)
+        if not channel:
+            return
 
-        r = re.compile('(https:\/\/discord.gg\/[\d\w]+)')
+        r = re.compile('(http(?:s)?:\/\/discord.gg\/[\d\w]+)', re.MULTILINE)
         s = ''
         counter = 0
         async for message in self.bot.logs_from(channel, limit=limit):
@@ -97,7 +111,11 @@ class Commands:
 
         print(counter, 'messages read')
         print(len(s.split('\n')), 'valid lines')
-        with open('invites.txt', 'w') as f:
+        f = os.path.join(os.getcwd(), 'channel invites')
+        if not os.path.isdir(f):
+            os.mkdir('channel invites')
+
+        with open(os.path.join(f, '%s.txt' % channel.id), 'w') as f:
             f.write(s)
 
     @command()
