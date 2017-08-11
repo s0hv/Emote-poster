@@ -49,6 +49,7 @@ class Commands:
 
         if server.id in blacklist:
             print('Server named %s is in blacklist. To post this type remove the id %s from blacklist.txt' % (server.name, server.id))
+            return
 
         name = server.name
         emotes_ = list(filter(lambda e: e.managed and e.require_colons and not e.roles, server.emojis))
