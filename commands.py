@@ -13,7 +13,7 @@ class Commands:
     def __init__(self, bot):
         self.bot = bot
 
-    @command(name='emotes', pass_context=True)
+    @command(name='emotes', pass_context=True, aliases=['emtoes'])
     async def emotes(self, ctx, invite: str, twitch=None, submitter=None):
         """Post global emotes from a server
         twitch can be twitch link or the submitter id"""
@@ -54,7 +54,7 @@ class Commands:
         name = server.name
         emotes_ = list(filter(lambda e: e.managed and e.require_colons and not e.roles, server.emojis))
         if not emotes_:
-            print('No global emotes found')
+            print('No global emotes found in server %s %s %s' % (str(invite), server.name, server.id))
             return
 
         emotes = ''
